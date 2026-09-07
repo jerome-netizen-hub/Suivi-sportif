@@ -47,13 +47,33 @@
       min-height: 100dvh;
     }
 
-    #appFrame {
-      display: block;
-      width: 100%;
-      height: 100dvh;
-      border: 0;
-      background: #f4f6f8;
-    }
+/* =========================================================
+   APPLICATION GOOGLE APPS SCRIPT
+   ========================================================= */
+
+#appViewport {
+  position: fixed;
+  inset: 0;
+
+  width: 100%;
+  height: 100dvh;
+
+  overflow: hidden;
+
+  background: #f4f6f8;
+}
+
+#appFrame {
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  border: 0;
+
+  background: #f4f6f8;
+
+  transform-origin: top left;
+}
 
     #configError,
     #offlineNotice {
@@ -96,12 +116,15 @@
     }
   </style>
 </head>
-<body>
+<div id="appViewport">
+
   <iframe
     id="appFrame"
     title="Suivi sportif"
     allow="fullscreen; clipboard-read; clipboard-write"
   ></iframe>
+
+</div>
 
   <div id="configError" hidden>
     <strong>Configuration nécessaire</strong>
@@ -133,6 +156,68 @@
        ========================================================= */
 
     const appFrame = document.getElementById('appFrame');
+        /* =========================================================
+       MISE À L'ÉCHELLE DE L'APPLICATION APPS SCRIPT
+    
+       Apps Script était auparavant affiché sur Android avec
+       une largeur virtuelle proche de celle d'une page desktop.
+       On reproduit ici ce comportement dans la PWA.
+       ========================================================= */
+    
+    const VIRTUAL_WIDTH = 980;
+    
+    
+    function resizeApp() {
+    
+      const screenWidth =
+        window.innerWidth;
+    
+      const screenHeight =
+        window.innerHeight;
+    
+      const scale =
+        screenWidth / VIRTUAL_WIDTH;
+    
+    
+      /*
+       * L'iframe pense disposer de 980 px de large.
+       */
+      appFrame.style.width =
+        VIRTUAL_WIDTH + 'px';
+    
+    
+      /*
+       * On augmente sa hauteur virtuelle pour que,
+       * après réduction, elle remplisse tout l'écran.
+       */
+      appFrame.style.height =
+        (screenHeight / scale) + 'px';
+    
+    
+      /*
+       * Puis on réduit l'ensemble exactement à la
+       * largeur réelle du téléphone.
+       */
+      appFrame.style.transform =
+        `scale(${scale})`;
+    
+    }
+    
+    
+    window.addEventListener(
+      'resize',
+      resizeApp
+    );
+    
+    
+    window.addEventListener(
+      'orientationchange',
+      resizeApp
+    );
+    
+    
+    resizeApp();
+    
     const configError = document.getElementById('configError');
 
     function isConfiguredUrl(value) {
