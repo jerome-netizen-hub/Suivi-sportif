@@ -1,4 +1,4 @@
-const CACHE_NAME = 'suivi-sportif-shell-v1';
+const CACHE_NAME = 'suivi-sportif-shell-v2';
 const STATIC_FILES = [
   './',
   './index.html',
